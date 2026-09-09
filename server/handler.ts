@@ -16,7 +16,7 @@ export function createHandler(options:{env:()=>AuthEnv;store:()=>Store;accounts:
   const env=options.env(),secure=url.protocol==='https:';
   if(path==='/logout'&&req.method==='POST')return response({ok:true},200,{'Set-Cookie':accountCookie('',secure)});
   try {
-   let raw='';if(req.method==='POST'){raw=await req.text();if(raw.length>(path==='/charts'?30000:4096))return response({error:'요청이 너무 큽니다.'},413);}
+   let raw='';if(req.method==='POST'){raw=await req.text();if(raw.length>(path==='/charts'?1800000:4096))return response({error:'요청이 너무 큽니다.'},413);}
    const token=readAccountToken(req.headers.get('cookie'),env);
    const found=token?await options.accounts().byId(token.id):null;
    const user=found?.active&&found.session_version===token?.v?found:null;
