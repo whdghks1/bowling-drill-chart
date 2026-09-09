@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {parseInches,formatInches,emptyChart,normalizeChart,chartSchema,missingSpecs,pitchLabel} from '../lib/drill-chart.ts';
+for(const [input,expected] of [['4 3/8',4.375],['7/8',.875],['-1/8',-.125],['0',0],['',null],['1/64',.015625],['1.234567',1.234567],['−1 1/4',-1.25]])assert.equal(parseInches(input),expected,input);
+for(const invalid of ['1/0','1/3','4.2.3','Infinity','1e309','4abc'])assert.throws(()=>parseInches(invalid),undefined,invalid);
+for(let ticks=-128;ticks<=512;ticks++)assert.equal(parseInches(formatInches(ticks/64)),ticks/64);
+assert.equal(formatInches(.2),'0.2');assert.equal(formatInches(null),'—');assert.equal(pitchLabel(-.125,'forward'),'R · 리버스 1/8″');
+const draft=emptyChart();assert.equal(draft.middle.diameter,null);assert.equal(draft.thumb.forward,null);assert(missingSpecs(draft).includes('중지 전후 피치'));
+const saved=chartSchema.parse({...draft,id:'03cf5678-3ab5-4321-a987-55f0788dab65',name:'테스트 볼러',middle:{...draft.middle,diameter:.875,forward:0,insertSize:'31/32'},spec:{...draft.spec,ovalShape:'oval',ovalLong:1.0625,ovalShort:.875,ovalAngle:45}});
+assert.deepEqual(chartSchema.parse(JSON.parse(JSON.stringify(saved))),saved);
+assert.equal(saved.middle.forward,0);assert.equal(saved.thumb.forward,null);
+assert.equal(chartSchema.safeParse({...saved,spec:{...saved.spec,ovalLong:.5,ovalShort:.875}}).success,false);
+const old=normalizeChart({name:'기존',middle:{diameter:.875,depth:2,forward:0,lateral:-.125}});assert.equal(old.middle.forward,0);assert.equal(old.middle.lateral,-.125);assert.equal(old.spec.spanBasis,'unknown');assert.equal(old.spec.ovalShape,'unknown');
+const two={...draft,grip:'two'};assert(!missingSpecs(two).some(x=>x.startsWith('엄지')||x.endsWith('스팬')));
+console.log('Passed fraction parsing/formatting (641 values), draft/null semantics, JSON round-trip, legacy preservation, oval validation, and no-thumb requirements.');
