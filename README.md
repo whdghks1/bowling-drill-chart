@@ -116,6 +116,10 @@ npm run build
 - [Netlify Functions](https://docs.netlify.com/build/functions/get-started/)
 - [Neon serverless driver](https://neon.com/docs/serverless/serverless-driver)
 
+## 작업표 바로 수정
+
+편집자·관리자는 수치 작업표 안에서 이름, 스팬, 브리지, 홀 규격, 피치와 메모를 직접 수정할 수 있습니다. 변경 사항은 ‘작업표 저장’으로 저장하며, 기존 항목별 입력은 작업표 아래에서 펼칠 수 있습니다. 공개 조회와 인쇄에는 입력 컨트롤이 표시되지 않습니다.
+
 ## 모바일 · 펜슬 사용
 
 - 편집 화면 상단에서 **수치 입력 / 자유 필기**를 전환합니다. 모바일에서는 **차트 선택**으로 볼러 목록을 열 수 있습니다.
