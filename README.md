@@ -136,3 +136,14 @@ npm run build
 - 인서트 종류는 GNS, 없음, 직접 입력 중 선택합니다.
 - 수치 입력칸에 ‘기존과 동일’, ‘조금 넓게’ 같은 한글을 입력할 수 있습니다. 한글이 포함된 값은 120자 이내 문구로 저장하고 조회/인쇄에 그대로 표시합니다. 숫자·분수는 기존 범위 검증을 적용합니다.
 - 한글 문구는 수치로 변환하거나 도식 계산에 사용하지 않습니다. 치수가 없는 볼 미리보기는 기존처럼 참고용 예시 위치를 사용합니다.
+
+## 인서트 카탈로그 · 그립 구분 (2026-09-09 확인)
+
+투구 방식(원핸드/덤리스/투핸드)과 손가락 삽입 방식(핑거팁/세미 핑거팁/컨벤셔널)을 분리했습니다. `spec.fingerGrip`에 그립 방식을 저장하며 기존 컨벤셔널 값은 표시 시 유지합니다. 다른 기존 차트의 그립 방식은 임의로 추정하지 않고 미지정으로 둡니다.
+
+선택 목록은 다음 자료에서 확인한 모델명으로 구성했습니다. 모델 선택은 치수나 피치를 자동 변경하지 않습니다. 실제 사용 제품의 면/형상은 작업 메모에 기록할 수 있고, 목록 밖 모델은 직접 입력할 수 있습니다. GNS 기존 값은 G&S로 자동 치환하지 않습니다.
+
+- [A-Bowl 인서트 목록](https://m.abowl.co.kr/us/goods/goods_list.php?cateCd=038007): G&S Ice, X-900, Black.
+- [VISE 주문서](https://www.viseinserts.com/order): P/O, P/S, O/PO.
+- [Turbo 제조사 카탈로그](https://turbogrips.com/product-category/finger-inserts/?product_view=list): Quad, MS Quad, Quad Classic, Classic-Pro, Quad2, Power-SB.
+- [Richmond 40 Bowl 그립 안내](https://richmond40bowl.com/bowling-grips-3-different-grips-and-how-they-can-affect-your-game/): 핑거팁, 세미 핑거팁, 컨벤셔널 구분.
