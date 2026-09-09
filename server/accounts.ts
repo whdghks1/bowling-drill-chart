@@ -7,7 +7,8 @@ export type PublicAccount=Pick<Account,'id'|'name'|'role'|'active'|'created_at'>
 export const publicAccount=(u:Account):PublicAccount=>({id:u.id,name:u.name,role:u.role,active:u.active,created_at:u.created_at});
 export const nameSchema=z.string().trim().min(2,'이름은 2자 이상 입력해주세요.').max(40).regex(/^[\p{L}\p{N} _.-]+$/u,'이름에는 문자, 숫자, 공백, 밑줄, 점, 하이픈만 사용할 수 있어요.').transform(s=>s.normalize('NFKC').replace(/\s+/g,' '));
 export const nameKey=(s:string)=>s.normalize('NFKC').trim().replace(/\s+/g,' ').toLowerCase();
-export const passwordSchema=z.string().min(8,'비밀번호는 8자 이상 입력해주세요.').max(128,'비밀번호는 128자 이하로 입력해주세요.');
+export const passwordSchema=z.string().regex(/^[0-9]{4}$/, '비밀번호는 숫자 4자리로 입력해주세요.');
+export const loginPasswordSchema=z.string().min(1).max(128);
 const derive=(password:string,salt:string)=>new Promise<Buffer>((resolve,reject)=>scryptCallback(password,salt,32,{N:32768,r:8,p:1,maxmem:64*1024*1024},(error,key)=>error?reject(error):resolve(key)));
 export async function hashPassword(password:string){const salt=randomBytes(16).toString('hex');const hash=await derive(password,salt);return `scrypt$${salt}$${hash.toString('hex')}`;}
 export async function verifyPassword(password:string,encoded:string){try{const [scheme,salt,hex]=encoded.split('$');if(scheme!=='scrypt'||!salt||!/^[a-f0-9]{64}$/.test(hex))return false;const hash=await derive(password,salt);return timingSafeEqual(hash,Buffer.from(hex,'hex'));}catch{return false;}}

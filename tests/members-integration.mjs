@@ -1,6 +1,6 @@
 // Opt-in integration test. Run only against an isolated Neon validation branch.
 import assert from 'node:assert/strict';
-import {randomUUID,randomBytes} from 'node:crypto';
+import {randomUUID,randomBytes,randomInt} from 'node:crypto';
 import {postgresAccounts} from '../server/account-store.ts';
 import {postgresStore} from '../server/store.ts';
 import {createHandler} from '../server/handler.ts';
@@ -10,7 +10,7 @@ if(!url||process.env.MEMBERS_TEST_BRANCH!=='br-icy-tooth-a4lh5iua')throw Error('
 const accounts=postgresAccounts(url),store=postgresStore(url);
 const env={ADMIN_PASSWORD:randomBytes(20).toString('hex'),SESSION_SECRET:randomBytes(32).toString('hex')};
 const h=createHandler({env:()=>env,accounts:()=>accounts,store:()=>store});
-const password=randomBytes(16).toString('hex'),prefix='QA-'+randomBytes(4).toString('hex');
+const password=String(randomInt(10000)).padStart(4,'0'),prefix='QA-'+randomBytes(4).toString('hex');
 const request=(path,body,cookie)=>new Request('https://integration.example/api/'+path,{method:body===undefined?'GET':'POST',headers:{origin:'https://integration.example','content-type':'application/json',...(cookie?{cookie}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
 const call=(path,body,cookie)=>h(request(path,body,cookie),{ip:'192.0.2.'+prefix});
 const cookie=r=>r.headers.get('set-cookie')?.split(';')[0];
@@ -30,7 +30,7 @@ try{
  assert.equal((await call('charts',chart,editorCookie)).status,200);
  assert.ok((await (await call('charts')).json()).some(c=>c.id===chart.id));
  assert.equal((await call('users',undefined,editorCookie)).status,403);
- const changed=await call('password',{currentPassword:password,newPassword:password+'new'},editorCookie);assert.equal(changed.status,200);
+ const changed=await call('password',{currentPassword:password,newPassword:String((Number(password)+1)%10000).padStart(4,'0')},editorCookie);assert.equal(changed.status,200);
  assert.equal((await (await call('session',undefined,editorCookie)).json()).user,null);
  assert.equal((await call('users',{id:member.id,role:'admin',active:true},adminCookie)).status,200);
  const second=await accounts.byId(member.id),first=await accounts.byId(admin.id);

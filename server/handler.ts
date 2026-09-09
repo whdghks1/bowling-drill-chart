@@ -2,7 +2,7 @@ import { createHmac,randomUUID } from 'node:crypto';
 import { chartSchema } from '../lib/drill-chart.ts';
 import { z } from 'zod';
 import { equals,type AuthEnv } from './auth.ts';
-import { accountCookie,accountToken,readAccountToken,publicAccount,nameSchema,nameKey,passwordSchema,hashPassword,verifyPassword,DUMMY_HASH,requireSecret } from './accounts.ts';
+import { accountCookie,accountToken,readAccountToken,publicAccount,nameSchema,nameKey,passwordSchema,loginPasswordSchema,hashPassword,verifyPassword,DUMMY_HASH,requireSecret } from './accounts.ts';
 import type { Store } from './store.ts';
 import type { AccountStore } from './account-store.ts';
 const schema=chartSchema.extend({shared:z.boolean().default(false)});
@@ -30,7 +30,7 @@ export function createHandler(options:{env:()=>AuthEnv;store:()=>Store;accounts:
     requireSecret(env);
     if(!await limit(`account:${context.ip||'unknown'}:${path}`))return limited();
     const value=JSON.parse(raw);
-    const parsed=(path==='/setup'?credentials.extend({setupPassword:z.string().min(1).max(512)}):credentials).safeParse(value);
+    const parsed=(path==='/setup'?credentials.extend({setupPassword:z.string().min(1).max(512)}):path==='/login'?credentials.extend({password:loginPasswordSchema}):credentials).safeParse(value);
     if(!parsed.success)return response({error:parsed.error.issues[0]?.message||'이름과 비밀번호를 확인해주세요.'},400);
     const {name,password}=parsed.data,key=nameKey(name);
     if(path==='/login'){
@@ -52,7 +52,7 @@ export function createHandler(options:{env:()=>AuthEnv;store:()=>Store;accounts:
    if(path==='/password'&&req.method==='POST'){
     if(!user)return response({error:'로그인이 필요합니다.'},401);
     if(!await limit('password:'+user.id))return limited();
-    const p=z.object({currentPassword:passwordSchema,newPassword:passwordSchema}).strict().safeParse(JSON.parse(raw));
+    const p=z.object({currentPassword:loginPasswordSchema,newPassword:passwordSchema}).strict().safeParse(JSON.parse(raw));
     if(!p.success)return response({error:p.error.issues[0]?.message},400);
     if(!await verifyPassword(p.data.currentPassword,user.password_hash))return response({error:'현재 비밀번호가 올바르지 않습니다.'},401);
     const changed=await options.accounts().changePassword(user.id,user.session_version,await hashPassword(p.data.newPassword));
