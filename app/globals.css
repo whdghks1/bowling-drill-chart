@@ -232,3 +232,22 @@ button:disabled{cursor:not-allowed;opacity:.55}
 @media(max-width:640px){.compact-sheet .sheet-span-edit .precise-input>span:first-child{font-size:12px}.compact-sheet .sheet-span-edit .precise-input input{padding:9px 5px}.compact-sheet .sheet-span-edit .precise-input small{display:none}.workspace .page-heading{margin-bottom:12px}.workspace .page-heading p,.workspace .page-heading .eyebrow{display:none}.workspace main{padding-top:16px}.workspace .editor-nav{margin-bottom:10px;gap:6px}.work-preview:has(.compact-sheet)>.work-status,.work-preview:has(.compact-sheet)>.source-note{display:none}.compact-sheet .sheet-fold-body{padding:8px}}
 .insert-picker{min-width:0}.insert-picker>input{display:block;width:100%;min-width:0;border:1px solid #cfdfd3;border-radius:8px;padding:9px 5px;font-size:16px;margin-top:6px;background:white}.sheet-cell-editor .insert-picker .choice{margin-top:0}
 .insert-picker [data-slot=select-value]{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.insert-picker [data-slot=select-trigger]{max-width:100%}
+
+/* Unified Korean/Latin typography for screen, controls, drawings and print. */
+:root{--font-readable:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif}
+body{font-family:var(--font-readable);font-weight:450;line-height:1.55;letter-spacing:0}
+button,input,textarea,select{font-family:var(--font-readable)}
+svg text{font-family:var(--font-readable)}
+input,.spec-table,.span-summary{font-variant-numeric:tabular-nums lining-nums}
+@media screen{
+ label{color:#3d564b;font-weight:500}.sheet-info span,.field-help,.standalone-help,.ink-help,.sheet-heading>div:last-child{color:#5c7467}
+ .spec-table td{font-weight:500}.spec-table th,.spec-table td:first-child{font-weight:650}.chart-item strong{font-weight:600}
+ .sheet-heading h2,h1,.club-heading h1,.page-heading h1{font-weight:700;letter-spacing:-.025em}
+ .sheet-cell-editor input,.precise-input input{font-weight:500}
+ @media(max-width:640px){
+  .spec-table th,.spec-table td,.spec-table td:first-child,.editable-sheet .spec-table td:first-child{font-size:12px;line-height:1.5}
+  .sheet-fold>summary,.mode-switch button{font-size:14px}
+  .sheet-cell-editor .choice{font-size:12px}.sheet-info strong{font-size:14px}
+  .precise-input .input-error{font-size:12px;line-height:1.5}
+ }
+}
