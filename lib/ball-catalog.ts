@@ -5,4 +5,11 @@ const product=(slug:string,name:string,core:string,key:string):BallProduct=>({id
 export const seedProducts:BallProduct[]=[product('iq-tour-edition','!Q Tour','C³ Centripetal Control','c3-centripetal-control'),product('motor-30','Motor 30','Torque A.I.','torque-ai'),product('the-code','The Code','RAD4','rad4')];
 export const emptyCatalog=():Catalog=>({products:seedProducts,lastAttempt:null,lastSuccess:null,errors:[],cursor:0});
 export function releaseBadge(date:string|null,now=Date.now()):'NEW'|'출시 예정'|null{if(!date)return null;const t=Date.parse(date+'T00:00:00Z');if(!Number.isFinite(t))return null;const days=(now-t)/86400000;return days<0?'출시 예정':days<=60?'NEW':null;}
-export function modelFor(p:BallProduct|undefined,weight:number){return p?.brand==='storm'&&p.coreKey==='c3-centripetal-control'&&weight===15?'c3-v1':null;}
+export const coreModels={
+ 'c3-v1':{name:'C³ Centripetal Control',brand:'storm',key:'c3-centripetal-control',image:'storm/S_C3C_00000.png'},
+ 'capacitor-v1':{name:'Capacitor',brand:'storm',key:'capacitor',image:'storm/CapacitorCore_00000.png'},
+ 'hustle-v1':{name:'Hustle',brand:'roto-grip',key:'hustle',image:'roto/Hustle_00000.png'},
+ 'surge-v1':{name:'Surge',brand:'storm',key:'surge',image:'storm/SurgeCore_00000.png'},
+} as const;
+export type CoreModelId=keyof typeof coreModels;
+export function modelFor(p:BallProduct|undefined,weight:number):CoreModelId|null{if(!p||weight!==15)return null;return (Object.keys(coreModels) as CoreModelId[]).find(id=>coreModels[id].brand===p.brand&&coreModels[id].key===p.coreKey)??null;}
