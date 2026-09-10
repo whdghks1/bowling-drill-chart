@@ -1,4 +1,5 @@
 import * as T from 'three';
+import {complexCore} from './complex-cores.ts';
 import {Brush,Evaluator,SUBTRACTION,INTERSECTION} from 'three-bvh-csg';
 import {fingerAngles,type Simulation} from './simulation.ts';
 export const BALL_RADIUS=108.5;
@@ -16,7 +17,7 @@ const profiles={
  'wrecker-ai-v1':[[0,-.69],[.39,-.69],[.42,-.66],[.42,-.49],[.47,-.41],[.53,-.15],[.68,.19],[.67,.24],[.59,.41],[.50,.62],[.39,.68],[.16,.72],[0,.73]],
  'meditate-ai-v1':[[0,-.72],[.16,-.71],[.25,-.68],[.36,-.48],[.46,-.24],[.51,.01],[.54,.26],[.53,.49],[.48,.65],[.34,.73],[.17,.76],[0,.77]],
 } as const;
-export function coreGeometry(s:Simulation){const profile=s.modelVersion&&s.modelVersion!=='c3-v1'?profiles[s.modelVersion]:null;const points=profile?profile.map(([r,y])=>new T.Vector2(r*BALL_RADIUS,y*BALL_RADIUS)):c3Profile.map(([r,y])=>new T.Vector2(r*(.63/.539)*BALL_RADIUS,(y*(1.6/1.432)+.05)*BALL_RADIUS));const g=new T.LatheGeometry(points,64);g.rotateX(T.MathUtils.degToRad(s.coreTilt));g.rotateZ(T.MathUtils.degToRad(s.coreTurn));return g;}
+export function coreGeometry(s:Simulation){const profile=s.modelVersion&&s.modelVersion!=='c3-v1'?profiles[s.modelVersion as keyof typeof profiles]:null;const points=profile?profile.map(([r,y])=>new T.Vector2(r*BALL_RADIUS,y*BALL_RADIUS)):c3Profile.map(([r,y])=>new T.Vector2(r*(.63/.539)*BALL_RADIUS,(y*(1.6/1.432)+.05)*BALL_RADIUS));const complex=complexCore(s.modelVersion??'');const g=complex?complex.scale(BALL_RADIUS,BALL_RADIUS,BALL_RADIUS):new T.LatheGeometry(points,64);g.rotateX(T.MathUtils.degToRad(s.coreTilt));g.rotateZ(T.MathUtils.degToRad(s.coreTurn));return g;}
 export function holeTools(s:Simulation,d1:number,d2:number,bridge:number,left=true){const angles=fingerAngles(d1,d2,bridge);return angles.map((a,i)=>{a*=left?1:-1;const n=new T.Vector3(Math.sin(a),0,Math.cos(a));const across=new T.Vector3(Math.cos(a),0,-Math.sin(a));const forward=s.pitchMode==='degrees'?(i?s.ringForward:s.middleForward):0,side=s.pitchMode==='degrees'?(i?s.ringSide:s.middleSide):0;
 const direction=n.clone().negate().addScaledVector(new T.Vector3(0,1,0),Math.tan(T.MathUtils.degToRad(forward))).addScaledVector(across,Math.tan(T.MathUtils.degToRad(side))).normalize();
 const depth=i?s.ringDepth:s.middleDepth;const surface=n.clone().multiplyScalar(BALL_RADIUS);const start=surface.clone().addScaledVector(direction,-4);const center=start.clone().addScaledVector(direction,(depth+4)/2);const g=new T.CylinderGeometry((i?d2:d1)/2,(i?d2:d1)/2,depth+4,32);g.applyQuaternion(new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),direction));g.translate(center.x,center.y,center.z);return {geometry:g,surface,bottom:surface.clone().addScaledVector(direction,depth)};});}

@@ -8,7 +8,10 @@ export function parseProduct(html:string,input:{id:string;name:string;source:str
  const date=html.match(/field--name-field-release-date[\s\S]*?<time[^>]*datetime="(\d{4}-\d{2}-\d{2})/);
  const weights=[...new Set([...html.matchAll(/<h6[^>]*>\s*(\d+) pounds\s*<\/h6>/g)].map(m=>Number(m[1])))];
  if(!core||!weights.length)throw Error('제품 구조를 확인할 수 없습니다');
- return {...input,brand,core:clean(core[2]).replace(/ Core$/,''),coreKey:core[1],weights,releaseDate:date?.[1]??null,checkedAt:now};
+ const specs:NonNullable<BallProduct['specs']>={};
+ const blocks=[...html.matchAll(/<h6[^>]*>\s*(\d+) pounds\s*<\/h6>([\s\S]*?)(?=<h6|<\/section>|$)/g)];
+ for(const b of blocks){const value=(field:string,min:number,max:number)=>{const m=b[2].match(new RegExp('field--name-field-'+field+'\\s[\\s\\S]*?field__item[^>]*>\\s*([0-9.]+)'));const n=m?Number(m[1]):NaN;return Number.isFinite(n)&&n>=min&&n<=max?n:null;};specs[b[1]]={rg:value('rg',2,3),diff:value('differential',0,.1),intermediate:value('mass-bias-differential',0,.1)};}
+ return {...input,brand,core:clean(core[2]).replace(/ Core$/,''),coreKey:core[1],weights,releaseDate:date?.[1]??null,checkedAt:now,specs};
 }
 async function read(url:string,signal:AbortSignal){const response=await fetch(url,{signal,headers:{'User-Agent':'BowlingFitCatalog/1.0 (+https://bowling-drill-chart.netlify.app/test)'}});if(!response.ok)throw Error(`HTTP ${response.status}`);const text=await response.text();if(text.length>3000000)throw Error('응답 크기 초과');return text;}
 export function archivePage(html:string,cursor:number){const pages=[...html.matchAll(/href="\?page=(\d+)"/g)].map(m=>Number(m[1]));const last=Math.max(0,...pages);return last?1+Math.floor(cursor/12)%last:null;}

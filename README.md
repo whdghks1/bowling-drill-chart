@@ -158,3 +158,9 @@ npm run build
 ### Additional center-core models
 
 The `/test` core picker now offers 10 models. ID A.I., C³ A.I., Centripetal HD A.I., Ikon A.I., Wrecker A.I., and Meditate A.I. add individually traced rotational silhouettes from manufacturer images linked in the UI. These six represent the central weightblock only: the A.I. outer-core volume, material densities, RG changes, and manufacturing dimensions are not simulated. C³ A.I. and Centripetal HD A.I. share a visible silhouette; differing density is not inferred from appearance. Mapping remains by exact brand/core key at 15 lb, never by a similar product name.
+
+### Core directory and product specifications
+
+The catalog groups products by exact brand/core key in a searchable core directory, including cores without a 3D model. Each product/weight shows its own un-drilled RG, differential, and intermediate differential; missing values remain unknown. `lib/catalog-reference.json` is a dated, source-linked public bowwwl snapshot, produced by `scripts/enrich-specs.mjs`. Scheduled catalog updates now also collect these fields; fresh database specs take precedence over the bundled snapshot. No drilled RG or mass properties are inferred.
+
+Six additional conceptual solids (Atomic A.I., Momentous AV A.I., Nucleus A.I., Disturbance A.I., Ellipse A.I., Supercoil) use composite volumes, flattened profiles, and rounded blocks instead of a single rotational body. Source-facing outlines are approximated; thickness, unseen features, edge rounding, and PSA orientation are not verified. A.I. outer-core layers remain omitted. These additions bring the model registry to 16.

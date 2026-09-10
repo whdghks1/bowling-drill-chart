@@ -1,4 +1,4 @@
-export type BallProduct={id:string;brand:string;name:string;core:string;coreKey:string;weights:number[];releaseDate:string|null;source:string;checkedAt:string|null};
+export type BallProduct={id:string;brand:string;name:string;core:string;coreKey:string;weights:number[];releaseDate:string|null;source:string;checkedAt:string|null;specs?:Record<string,{rg:number|null;diff:number|null;intermediate:number|null}>};
 export type Catalog={products:BallProduct[];lastAttempt:string|null;lastSuccess:string|null;errors:string[];cursor:number};
 export const brands=[['storm','Storm'],['roto-grip','Roto Grip'],['900-global','900 Global'],['hammer','Hammer'],['motiv','MOTIV'],['brunswick','Brunswick'],['radical','Radical']] as const;
 const product=(slug:string,name:string,core:string,key:string):BallProduct=>({id:`storm/${slug}`,brand:'storm',name,core,coreKey:key,weights:[15],releaseDate:null,source:`https://www.bowwwl.com/bowling-ball-database/storm/${slug}`,checkedAt:null});
@@ -16,6 +16,12 @@ export const coreModels={
  'ikon-ai-v1':{name:'Ikon A.I.',brand:'roto-grip',key:'ikon-ai',image:'roto/Ikon_00000.png'},
  'wrecker-ai-v1':{name:'Wrecker A.I.',brand:'roto-grip',key:'wrecker-ai',image:'roto/R_Wrecker_AI.png'},
  'meditate-ai-v1':{name:'Meditate A.I.',brand:'900-global',key:'meditate-ai',image:'global/G_Meditate_AI_00000.png'},
+ 'atomic-ai-v1':{name:'Atomic A.I.',brand:'storm',key:'atomic-ai',image:'storm/Atomic%20AI_00000.png'},
+ 'momentous-ai-v1':{name:'Momentous AV A.I.',brand:'roto-grip',key:'momentous-av-ai',image:'roto/R_Momentous%20AI.png'},
+ 'nucleus-ai-v1':{name:'Nucleus A.I.',brand:'roto-grip',key:'nucleus-ai',image:'roto/Nucleus_00000.png'},
+ 'disturbance-ai-v1':{name:'Disturbance A.I.',brand:'900-global',key:'disturbance-ai',image:'global/G_Disturbance_Asymmetric_AI_00000.png'},
+ 'ellipse-ai-v1':{name:'Ellipse A.I.',brand:'900-global',key:'ellipse-ai',image:'global/Ellipse_AI_00000.png'},
+ 'supercoil-v1':{name:'Supercoil',brand:'storm',key:'supercoil',image:'storm/Supercoil_00000.png'},
 } as const;
 export type CoreModelId=keyof typeof coreModels;
 export function modelFor(p:BallProduct|undefined,weight:number):CoreModelId|null{if(!p||weight!==15)return null;return (Object.keys(coreModels) as CoreModelId[]).find(id=>coreModels[id].brand===p.brand&&coreModels[id].key===p.coreKey)??null;}
