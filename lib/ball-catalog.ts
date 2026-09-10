@@ -10,6 +10,12 @@ export const coreModels={
  'capacitor-v1':{name:'Capacitor',brand:'storm',key:'capacitor',image:'storm/CapacitorCore_00000.png'},
  'hustle-v1':{name:'Hustle',brand:'roto-grip',key:'hustle',image:'roto/Hustle_00000.png'},
  'surge-v1':{name:'Surge',brand:'storm',key:'surge',image:'storm/SurgeCore_00000.png'},
+ 'id-ai-v1':{name:'ID A.I.',brand:'storm',key:'id-ai',image:'storm/Identity%20Core_00000.png'},
+ 'c3-ai-v1':{name:'C³ A.I.',brand:'storm',key:'c3-ai',image:'storm/C3CC_AI_00000.png'},
+ 'centripetal-hd-ai-v1':{name:'Centripetal HD A.I.',brand:'storm',key:'centripetal-hd-ai',image:'storm/Centripetal_hd_ai_00000.png'},
+ 'ikon-ai-v1':{name:'Ikon A.I.',brand:'roto-grip',key:'ikon-ai',image:'roto/Ikon_00000.png'},
+ 'wrecker-ai-v1':{name:'Wrecker A.I.',brand:'roto-grip',key:'wrecker-ai',image:'roto/R_Wrecker_AI.png'},
+ 'meditate-ai-v1':{name:'Meditate A.I.',brand:'900-global',key:'meditate-ai',image:'global/G_Meditate_AI_00000.png'},
 } as const;
 export type CoreModelId=keyof typeof coreModels;
 export function modelFor(p:BallProduct|undefined,weight:number):CoreModelId|null{if(!p||weight!==15)return null;return (Object.keys(coreModels) as CoreModelId[]).find(id=>coreModels[id].brand===p.brand&&coreModels[id].key===p.coreKey)??null;}

@@ -154,3 +154,7 @@ npm run build
 카탈로그는 `sql/003-catalog.sql`을 적용한 Neon 테이블에 저장합니다. `catalog-sync` Netlify Scheduled Function은 매일 21:00 UTC(한국 오전 6시)에 브랜드 7개의 최신 목록을 조회하고, 브랜드별 최신 2개와 이전 출시 제품 2개를 신규/오래된 확인 순서로 갱신합니다. 이전 목록은 실제 페이지 링크에서 선택하고 12일마다 다음 페이지로 이동합니다. 초기 목록 확장은 `scripts/backfill-catalog.mjs`로 브랜드별 첫 2페이지를 동시 요청 4개 이내로 수집합니다. 중간 결과 JSON을 저장하고 재실행 시 확인한 제품을 건너뜁니다. 실패 시 기존 제품은 삭제하지 않으며 마지막 시도/성공 시간을 공개합니다. 소스는 bowwwl의 공개 제품 페이지이고 코어 이름·무게·출시일만 저장합니다. NEW는 출시일 이후 60일, 미래 날짜는 출시 예정, 날짜가 없으면 배지 없음입니다. 발견일이나 페이지 갱신일은 출시일로 사용하지 않습니다. 제품 정보 수집은 새 3D 형상 생성을 의미하지 않습니다.
 
 수동 갱신: `node --env-file-if-exists=.env --experimental-strip-types scripts/sync-catalog.mjs`. 배포 전 `npm test`와 `npm run build`로 기존 권한/저장, 카탈로그 파서, 숫자 입력과 CSG 절삭을 확인합니다. 스케줄은 Netlify 프로덕션 배포에서만 실행됩니다.
+
+### Additional center-core models
+
+The `/test` core picker now offers 10 models. ID A.I., C³ A.I., Centripetal HD A.I., Ikon A.I., Wrecker A.I., and Meditate A.I. add individually traced rotational silhouettes from manufacturer images linked in the UI. These six represent the central weightblock only: the A.I. outer-core volume, material densities, RG changes, and manufacturing dimensions are not simulated. C³ A.I. and Centripetal HD A.I. share a visible silhouette; differing density is not inferred from appearance. Mapping remains by exact brand/core key at 15 lb, never by a similar product name.
