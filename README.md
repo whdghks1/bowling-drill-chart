@@ -147,3 +147,10 @@ npm run build
 - [VISE 주문서](https://www.viseinserts.com/order): P/O, P/S, O/PO.
 - [Turbo 제조사 카탈로그](https://turbogrips.com/product-category/finger-inserts/?product_view=list): Quad, MS Quad, Quad Classic, Classic-Pro, Quad2, Power-SB.
 - [Richmond 40 Bowl 그립 안내](https://richmond40bowl.com/bowling-grips-3-different-grips-and-how-they-can-affect-your-game/): 핑거팁, 세미 핑거팁, 컨벤셔널 구분.
+# 3D 실험실 `/test`
+
+기존 `/` 차트와 별도 경로에서 브랜드 → 제품 → 무게를 선택합니다. 현재 확인된 C³ 코어 15 lb만 `c3-v1` 추정 모델로 연결하며, 다른 코어/무게는 모델 준비 전으로 표시합니다. 기본 2홀 수치는 예시입니다. 홀 깊이·각도·코어 방향은 차트의 선택적 `simulation` 필드로 저장합니다. 기존 차트의 드릴경과 브리지는 3D에 연결되지만 inch 게이지 피치는 각도로 자동 변환하지 않습니다. 코어 기울기는 시각적 배치이며 PAP 레이아웃 해석기가 아닙니다.
+
+카탈로그는 `sql/003-catalog.sql`을 적용한 Neon 테이블에 저장합니다. `catalog-sync` Netlify Scheduled Function은 매일 21:00 UTC(한국 오전 6시)에 브랜드 7개의 최신 목록을 조회하고, 브랜드별 최대 3개 제품을 신규/오래된 확인 순서로 갱신합니다. 전체 구형 제품 목록을 한 번에 수집하는 방식은 아닙니다. 실패 시 기존 제품은 삭제하지 않으며 마지막 시도/성공 시간을 공개합니다. 소스는 bowwwl의 공개 제품 페이지이고 코어 이름·무게·출시일만 저장합니다. NEW는 출시일 이후 60일, 미래 날짜는 출시 예정, 날짜가 없으면 배지 없음입니다. 발견일이나 페이지 갱신일은 출시일로 사용하지 않습니다. 제품 정보 수집은 새 3D 형상 생성을 의미하지 않습니다.
+
+수동 갱신: `node --env-file-if-exists=.env --experimental-strip-types scripts/sync-catalog.mjs`. 배포 전 `npm test`와 `npm run build`로 기존 권한/저장, 카탈로그 파서, 숫자 입력과 CSG 절삭을 확인합니다. 스케줄은 Netlify 프로덕션 배포에서만 실행됩니다.

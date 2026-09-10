@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {releaseBadge,modelFor,seedProducts} from '../lib/ball-catalog.ts';
+import {defaultSimulation,fingerAngles,numericMm} from '../lib/simulation.ts';
+import {chartSchema,emptyChart} from '../lib/drill-chart.ts';
+import {parseListing,parseProduct} from '../server/catalog-sync.ts';
+import {coreGeometry,holeTools,subtractHoles} from '../lib/core-geometry.ts';
+import {MeshStandardMaterial} from 'three';
+import {computeMeshVolume} from 'three-bvh-csg';
+test('release badge uses release date, not discovery date, with future release separated',()=>{const now=Date.parse('2026-09-10T12:00:00Z');assert.equal(releaseBadge(null,now),null);assert.equal(releaseBadge('2026-01-01',now),null);assert.equal(releaseBadge('2026-09-01',now),'NEW');assert.equal(releaseBadge('2026-10-01',now),'출시 예정');});
+test('unmodelled weights and AI variants do not borrow IQ geometry',()=>{assert.equal(modelFor(seedProducts[0],15),'c3-v1');assert.equal(modelFor(seedProducts[0],14),null);assert.equal(modelFor({...seedProducts[0],coreKey:'c3-ai'},15),null);assert.equal(modelFor(seedProducts[1],15),null);});
+test('catalog parser follows actual core key and release metadata, not product title',()=>{const list=parseListing('<a href="/bowling-ball-database/storm/demo" class="card-link"><span>Test &amp; Ball</span></a>','storm');assert.equal(list[0].name,'Test & Ball');const p=parseProduct('<div class="field--name-field-release-date"><time datetime="2026-09-01T12:00:00Z"></time></div><a href="/bowling-ball-database/storm/cores/c3-ai">C3 AI Core</a><h6 class="card-title">15 pounds</h6>',list[0],'now');assert.equal(p.releaseDate,'2026-09-01');assert.equal(p.coreKey,'c3-ai');assert.throws(()=>parseProduct('<html>Blocked</html>',list[0],'now'));});
+test('Korean measurements never become hole dimensions; bridge is edge-to-edge',()=>{assert.equal(numericMm('넓게'),null);const [a,b]=fingerAngles(26,26,10);assert.ok(Math.abs((b-a-2*Math.asin(13/108.5))*108.5-10)<1e-9);});
+test('simulation survives chart save validation; legacy chart remains valid',()=>{const c={...emptyChart(),id:'04db9188-88d5-4861-b073-c136a66d5167',name:'테스트'};assert.equal(chartSchema.safeParse(c).success,true);const saved=chartSchema.parse({...c,simulation:defaultSimulation()});assert.equal(saved.simulation.middleDepth,55);assert.equal(chartSchema.safeParse({...c,simulation:{...defaultSimulation(),middleDepth:900}}).success,false);});
+test('two cylindrical holes remove finite geometry and respect requested depth',()=>{const s={...defaultSimulation(),coreTilt:90};const tools=holeTools(s,26,26,9.5);assert.ok(Math.abs(tools[0].surface.distanceTo(tools[0].bottom)-55)<1e-9);const g=coreGeometry(s),mat=new MeshStandardMaterial(),before=Number(computeMeshVolume(g));const cut=subtractHoles(g,tools,mat,mat);const after=Number(computeMeshVolume(cut.result));assert.ok(after>0&&after<before);assert.ok(cut.removed.some(g=>Number(computeMeshVolume(g))>0));for(const arr of [cut.result.geometry,...cut.removed].map(g=>g.getAttribute('position').array))assert.ok([...arr].every(Number.isFinite));});
